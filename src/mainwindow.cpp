@@ -249,6 +249,9 @@ void MainWindow::generateField() {
 					}
 
 					if (field->getMineStatus() == true) {
+						field->setText("X");
+						field->setStyleSheet("color: rgb(255, 0, 0)");
+
 						this->endGame("You lost");
 
 						return;
