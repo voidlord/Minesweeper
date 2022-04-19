@@ -169,6 +169,7 @@ void MainWindow::generateField() {
 			field->setText("");
 			field->setFont(QFont("Arial", 24));
 			field->setMinimumSize(this->size().width()/this->settings.Width, this->size().height()/this->settings.Height);
+			field->setMaximumSize(this->size().height()/this->settings.Height, this->size().width()/this->settings.Width);
 
 			connect(field, &Field::pressed, [=](){
 				if (this->lockButtons == false && (field->isFlagged() == false)) {
