@@ -20,7 +20,7 @@ struct Settings {
 	int Width = 9;
 	int Height = 9;
 	int Mines = 10;
-	int maxButtonSize = 40;
+	int buttonSize = 40;
 };
 
 class MainWindow : public QMainWindow

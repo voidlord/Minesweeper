@@ -99,33 +99,22 @@ MainWindow::MainWindow(QWidget *parent)
 		ui->stackedWidget->addWidget(this->fieldWidget);
 		ui->stackedWidget->setCurrentWidget(this->fieldWidget);
 
-		if (this->settings.Width > this->settings.Height) {
-			this->windowXsize = ((this->settings.Width*(this->settings.Width/this->settings.Height))/2)*100;
-			this->windowYsize = (this->settings.Height/2)*100;
-		} else if (this->settings.Width > this->settings.Height) {
-			this->windowXsize = (this->settings.Width/2)*100;
-			this->windowYsize = ((this->settings.Height*(this->settings.Height/this->settings.Width))/2)*100;
-		} else {
-			this->windowXsize = (this->settings.Width/2)*100;
-			this->windowYsize = (this->settings.Height/2)*100;
-		}
+		this->windowXsize = max(400, this->settings.Width*40);
+		this->windowYsize = max(400, this->settings.Height*40);
 
-		if (this->windowXsize < 400) {
-			this->windowXsize = 400;
-		}
-		if (this->windowYsize < 400) {
-			this->windowYsize = 400;
-		}
-
-		if (this->windowXsize >= 750 || this->windowYsize >= 750) {
+		// Zoom down by 50% if window is too large
+		if (this->windowXsize >= 1000 || this->windowYsize >= 750) {
 			this->windowXsize /= 1.5;
 			this->windowYsize /= 1.5;
 		}
 
-		this->generateField();
-
 		this->setFixedSize(this->windowXsize, this->windowYsize);
 		ui->stackedWidget->resize(this->windowXsize, this->windowYsize);
+
+		this->generateField();
+
+		this->settings.buttonSize = this->fields[0][0]->size().width();
+
 		this->setWindowTitle("Mines left: " + QString::number(this->mineCounter));
 
 		this->lockButtons = false;
@@ -162,14 +151,21 @@ void MainWindow::generateField() {
 
 	this->gridLayout = new QGridLayout();
 	this->gridLayout->setSpacing(0);
+	this->gridLayout->setAlignment(Qt::AlignTop);
+	this->gridLayout->setSizeConstraint(QLayout::SetMaximumSize);
 	this->fieldWidget->setLayout(this->gridLayout);
 	for (int i = 0; i < this->settings.Height; i++) {
 		for (int j = 0; j < this->settings.Width; j++) {
 			Field* field = new Field(i, j);
 			field->setText("");
-			field->setFont(QFont("Arial", 24));
-			field->setMinimumSize(this->size().width()/this->settings.Width, this->size().height()/this->settings.Height);
-			field->setMaximumSize(this->size().height()/this->settings.Height, this->size().width()/this->settings.Width);
+
+			//field->setMinimumSize(max(40, this->size().width()/this->settings.Width - 5), max(40, this->size().height()/this->settings.Height - 5));
+			field->setMaximumSize(min(40, this->size().width()/this->settings.Width), min(40, this->size().height()/this->settings.Height));
+			field->setMinimumSize(max(field->size().width(), field->size().height()), max(field->size().width(), field->size().height()));
+
+			QFont font("Arial");
+			font.setPointSize(field->size().width()/2);
+			field->setFont(font);
 
 			connect(field, &Field::pressed, [=](){
 				if (this->lockButtons == false && (field->isFlagged() == false)) {
