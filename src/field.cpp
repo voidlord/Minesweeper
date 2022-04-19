@@ -38,6 +38,7 @@ void Field::setNeighbourMines(int numOfMines) {
 void Field::show() {
 	if (this->neighbourMines > 0) {
 		this->setText(QString::number(this->neighbourMines));
+		this->setStyleSheet("");
 	}
 }
 
