@@ -177,18 +177,25 @@ void MainWindow::generateField() {
 
 					if (this->firstPress) {
 						// Generate mines
+						int cycles = 0;
 						int i = 0;
 						while (i < this->settings.Mines) {
 							int x, y;
 							x = rand() % this->settings.Height;
 							y = rand() % this->settings.Width;
 
-							if (x != field->getX() && y != field->getY()) {
+							if (!(x == field->getX() & y == field->getY())) {
 								if (this->fields[x][y]->getMineStatus() == false) {
 									this->fields[x][y]->setMineStatus(true);
 
 									i++;
 								}
+							}
+							cycles++;
+
+							// Either RNG isnt on our side, or for some reason, the generating cannot be done with current numbers
+							if (cycles >= (this->settings.Height*this->settings.Width*100)) {
+								break;
 							}
 						}
 
