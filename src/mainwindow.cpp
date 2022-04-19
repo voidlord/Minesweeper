@@ -194,7 +194,7 @@ void MainWindow::generateField() {
 							cycles++;
 
 							// Either RNG isnt on our side, or for some reason, the generating cannot be done with current numbers
-							if (cycles >= (this->settings.Height*this->settings.Width*100)) {
+							if (cycles >= (this->settings.Height*this->settings.Width*1000)) {
 								break;
 							}
 						}
