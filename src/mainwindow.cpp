@@ -317,6 +317,19 @@ void MainWindow::endGame(string resultText) {
 	QMessageBox* resultMessage = new QMessageBox();
 	resultMessage->setText(QString::fromStdString(resultText));
 
+	// Color correctly placed flags
+	for (int i = 0; i < this->settings.Height; i++) {
+		for (int j = 0; j < this->settings.Width; j++) {
+			if (this->fields[i][j]->getMineStatus() == true) {
+				if (this->fields[i][j]->isFlagged()) {
+					this->fields[i][j]->setStyleSheet("color: rgb(0, 255, 0)");
+				} else {
+					this->fields[i][j]->setText("X");
+				}
+			}
+		}
+	}
+
 	resultMessage->exec();
 
 	this->clearField();
