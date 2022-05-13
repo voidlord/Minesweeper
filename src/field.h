@@ -34,6 +34,7 @@ public:
 
 signals:
 	void rightClicked();
+	void middleClicked();
 };
 
 #endif // FIELD_H

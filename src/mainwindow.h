@@ -31,7 +31,9 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 
-	void generateField();
+	void generateLayout();
+	void generateFields(int startX, int startY);
+	void setNumbersForFields();
 	void endGame(string resultText);
 	void clearField();
 

@@ -111,7 +111,7 @@ MainWindow::MainWindow(QWidget *parent)
 		this->setFixedSize(this->windowXsize, this->windowYsize);
 		ui->stackedWidget->resize(this->windowXsize, this->windowYsize);
 
-		this->generateField();
+		this->generateLayout();
 
 		this->settings.buttonSize = this->fields[0][0]->size().width();
 
@@ -131,7 +131,6 @@ void MainWindow::clearEmptyAux(int i, int j) {
 			for (int l = -1; l < 2; l++) {
 				if ((i+k >= 0) && (j+l >= 0) && (i+k < this->settings.Height) && (j+l < this->settings.Width)) {
 					if (this->fields[i+k][j+l]->isEnabled() == true) {
-						this->fields[i+k][j+l]->setEnabled(false);
 						this->fields[i+k][j+l]->show();
 
 						if (this->fields[i+k][j+l]->getNeighbourMines() == 0) {
@@ -143,7 +142,7 @@ void MainWindow::clearEmptyAux(int i, int j) {
 		}
 	}
 }
-void MainWindow::generateField() {
+void MainWindow::generateLayout() {
 	this->fields = vector<vector<Field*>>(this->settings.Height);
 	for (int i = 0; i < this->settings.Height; i++) {
 		this->fields[i] = vector<Field*>(this->settings.Width);
@@ -159,7 +158,6 @@ void MainWindow::generateField() {
 			Field* field = new Field(i, j);
 			field->setText("");
 
-			//field->setMinimumSize(max(40, this->size().width()/this->settings.Width - 5), max(40, this->size().height()/this->settings.Height - 5));
 			field->setMaximumSize(min(40, this->size().width()/this->settings.Width), min(40, this->size().height()/this->settings.Height));
 			field->setMinimumSize(max(field->size().width(), field->size().height()), max(field->size().width(), field->size().height()));
 
@@ -172,58 +170,9 @@ void MainWindow::generateField() {
 					this->lockButtons = true;
 
 					if (this->firstPress) {
-						// Generate mines
-						int cycles = 0;
-						int i = 0;
-						while (i < this->settings.Mines) {
-							int x, y;
-							x = rand() % this->settings.Height;
-							y = rand() % this->settings.Width;
+						this->generateFields(field->getX(), field->getY());
 
-							if (!(x == field->getX() & y == field->getY())) {
-								if (this->fields[x][y]->getMineStatus() == false) {
-									this->fields[x][y]->setMineStatus(true);
-
-									i++;
-								}
-							}
-							cycles++;
-
-							// Either RNG isnt on our side, or for some reason, the generating cannot be done with current numbers
-							if (cycles >= (this->settings.Height*this->settings.Width*1000)) {
-								break;
-							}
-						}
-
-						// Count mines
-						for (int i = 0; i < this->settings.Height; i++) {
-							for (int j = 0; j < this->settings.Width; j++) {
-								if (this->fields[i][j]->getMineStatus() == true) {
-									for (int k = -1; k < 2; k++) {
-										for (int l = -1; l < 2; l++) {
-											if ((i+k >= 0) && (j+l >= 0) && (i+k < this->settings.Height) && (j+l < this->settings.Width)) {
-												this->fields[i+k][j+l]->setNeighbourMines(this->fields[i+k][j+l]->getNeighbourMines()+1);
-											}
-										}
-									}
-								}
-							}
-						}
-
-						// Debug field
-						/*
-						for (int i = 0; i < this->settings.Height; i++) {
-							for (int j = 0; j < this->settings.Width; j++) {
-								if (this->fields[i][j]->getNeighbourMines() > 0) {
-									this->fields[i][j]->show();
-								}
-
-								if (this->fields[i][j]->getMineStatus() == true) {
-									this->fields[i][j]->setText("X");
-								}
-							}
-						}
-						//*/
+						this->setNumbersForFields();
 
 						// Setup a proper start, by clearing all zeroes around start
 						{
@@ -234,7 +183,6 @@ void MainWindow::generateField() {
 									if ((i+k >= 0) && (j+l >= 0) && (i+k < this->settings.Height) && (j+l < this->settings.Width)) {
 										if (this->fields[i+k][j+l]->isEnabled() == true) {
 											if (this->fields[i+k][j+l]->getNeighbourMines() == 0) {
-												this->fields[i+k][j+l]->setEnabled(false);
 												this->fields[i+k][j+l]->show();
 
 												this->clearEmptyAux(i+k, j+l);
@@ -256,7 +204,6 @@ void MainWindow::generateField() {
 
 						return;
 					} else {
-						field->setEnabled(false);
 						field->show();
 					}
 
@@ -292,7 +239,6 @@ void MainWindow::generateField() {
 						field->setText("F");
 
 						this->mineCounter--;
-						this->setWindowTitle("Mines left: " + QString::number(this->mineCounter));
 					} else {
 						field->setFlag(false);
 
@@ -300,8 +246,9 @@ void MainWindow::generateField() {
 						field->setText("");
 
 						this->mineCounter++;
-						this->setWindowTitle("Mines left: " + QString::number(this->mineCounter));
 					}
+
+					this->setWindowTitle("Mines left: " + QString::number(this->mineCounter));
 				}
 			});
 
@@ -313,6 +260,48 @@ void MainWindow::generateField() {
 	this->mineCounter = this->settings.Mines;
 
 	this->firstPress = true;
+}
+
+void MainWindow::generateFields(int startX, int startY) {
+	// Generate mines
+	int cycles = 0;
+	int i = 0;
+	while (i < this->settings.Mines) {
+		int x, y;
+		x = rand() % this->settings.Height;
+		y = rand() % this->settings.Width;
+
+		if (!(x == startX & y == startY)) {
+			if (this->fields[x][y]->getMineStatus() == false) {
+				this->fields[x][y]->setMineStatus(true);
+
+				i++;
+			}
+		}
+		cycles++;
+
+		// Either RNG isnt on our side, or for some reason, the generating cannot be done with current numbers
+		if (cycles >= (this->settings.Height*this->settings.Width*1000)) {
+			break;
+		}
+	}
+}
+
+void MainWindow::setNumbersForFields() {
+	for (int i = 0; i < this->settings.Height; i++) {
+		for (int j = 0; j < this->settings.Width; j++) {
+			if (this->fields[i][j]->getMineStatus() == true) {
+				// Iterate over neighbours
+				for (int k = -1; k < 2; k++) {
+					for (int l = -1; l < 2; l++) {
+						if ((i+k >= 0) && (j+l >= 0) && (i+k < this->settings.Height) && (j+l < this->settings.Width)) {
+							this->fields[i+k][j+l]->setNeighbourMines(this->fields[i+k][j+l]->getNeighbourMines()+1);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void MainWindow::endGame(string resultText) {

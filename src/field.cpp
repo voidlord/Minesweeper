@@ -38,8 +38,12 @@ void Field::setNeighbourMines(int numOfMines) {
 void Field::show() {
 	if (this->neighbourMines > 0) {
 		this->setText(QString::number(this->neighbourMines));
-		this->setStyleSheet("");
+	} else {
+		this->setText("");
 	}
+	this->setStyleSheet("");
+	this->flagged = false;
+	this->setEnabled(false);
 }
 
 bool Field::isFlagged() {
@@ -55,5 +59,7 @@ void Field::mousePressEvent(QMouseEvent* e) {
 		emit rightClicked();
 	} else if (e->button() == Qt::LeftButton) {
 		emit pressed();
+	} else if (e->button() == Qt::MiddleButton) {
+		emit middleClicked();
 	}
 }
