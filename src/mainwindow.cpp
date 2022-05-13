@@ -255,7 +255,7 @@ void MainWindow::generateLayout() {
 
 			connect(field, &Field::middleClicked, [=](){
 				if (!this->firstPress) {
-					this->attemptClear(field->getX(), field->getY());
+					this->attemptMultiClear(field->getX(), field->getY());
 				}
 			});
 
@@ -350,7 +350,7 @@ void MainWindow::clearField() {
 	this->gridLayout = nullptr;
 }
 
-void MainWindow::attemptClear(int i, int j) {
+void MainWindow::attemptMultiClear(int i, int j) {
 	int flagged = 0;
 	int uncleared = 0;
 
