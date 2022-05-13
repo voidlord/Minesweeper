@@ -356,13 +356,28 @@ void MainWindow::attemptClear(int i, int j) {
 
 	for (int k = -1; k < 2; k++) {
 		for (int l = -1; l < 2; l++) {
-			if (this->fields[i+k][j+k]->isFlagged()) {
-				flagged++;
-			} else if (this->fields[i+k][j+k]->isEnabled()) {
-				uncleared++;
+			if ((i+k >= 0) && (j+l >= 0) && (i+k < this->settings.Height) && (j+l < this->settings.Width)) {
+				if (this->fields[i+k][j+l]->isFlagged()) {
+					flagged++;
+				} else if (this->fields[i+k][j+l]->isEnabled()) {
+					uncleared++;
+				}
 			}
 		}
 	}
 
-	qDebug() << flagged << uncleared;
+	if (this->fields[i][j]->getNeighbourMines() == flagged) {
+		for (int k = -1; k < 2; k++) {
+			for (int l = -1; l < 2; l++) {
+				if ((i+k >= 0) && (j+l >= 0) && (i+k < this->settings.Height) && (j+l < this->settings.Width)) {
+					if (this->gridLayout != nullptr) {
+						emit this->fields[i+k][j+l]->pressed();
+					} else {
+						// Game is over
+						return;
+					}
+				}
+			}
+		}
+	}
 }
