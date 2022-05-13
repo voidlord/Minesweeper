@@ -284,22 +284,24 @@ void MainWindow::generateField() {
 			});
 
 			connect(field, &Field::rightClicked, [=](){
-				if (field->isFlagged() == false) {
-					field->setFlag(true);
+				if (!this->firstPress) {
+					if (field->isFlagged() == false) {
+						field->setFlag(true);
 
-					field->setStyleSheet("color: rgb(255, 0, 0)");
-					field->setText("F");
+						field->setStyleSheet("color: rgb(255, 0, 0)");
+						field->setText("F");
 
-					this->mineCounter--;
-					this->setWindowTitle("Mines left: " + QString::number(this->mineCounter));
-				} else {
-					field->setFlag(false);
+						this->mineCounter--;
+						this->setWindowTitle("Mines left: " + QString::number(this->mineCounter));
+					} else {
+						field->setFlag(false);
 
-					field->setStyleSheet("");
-					field->setText("");
+						field->setStyleSheet("");
+						field->setText("");
 
-					this->mineCounter++;
-					this->setWindowTitle("Mines left: " + QString::number(this->mineCounter));
+						this->mineCounter++;
+						this->setWindowTitle("Mines left: " + QString::number(this->mineCounter));
+					}
 				}
 			});
 
