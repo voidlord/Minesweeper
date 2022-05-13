@@ -6,7 +6,8 @@ Field::Field(int x, int y) :
 	isMine(false),
 	neighbourMines(0),
 	isVisible(false),
-	flagged(false)
+	flagged(false),
+	enabled(true)
 {
 
 }
@@ -41,13 +42,18 @@ void Field::show() {
 	} else {
 		this->setText("");
 	}
-	this->setStyleSheet("");
+	this->setStyleSheet("color: rgb(120, 120, 120); background-color: rgb(204, 204, 204); border: 1px solid #FFFFFF;");
+
 	this->flagged = false;
-	this->setEnabled(false);
+	this->enabled = false;
 }
 
 bool Field::isFlagged() {
 	return this->flagged;
+}
+
+bool Field::isEnabled() {
+	return this->enabled;
 }
 
 void Field::setFlag(bool status) {
@@ -55,10 +61,12 @@ void Field::setFlag(bool status) {
 }
 
 void Field::mousePressEvent(QMouseEvent* e) {
-	if (e->button() == Qt::RightButton) {
-		emit rightClicked();
-	} else if (e->button() == Qt::LeftButton) {
-		emit pressed();
+	if (this->enabled == true) {
+		if (e->button() == Qt::RightButton) {
+			emit rightClicked();
+		} else if (e->button() == Qt::LeftButton) {
+			emit pressed();
+		}
 	} else if (e->button() == Qt::MiddleButton) {
 		emit middleClicked();
 	}

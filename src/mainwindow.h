@@ -37,6 +37,8 @@ public:
 	void endGame(string resultText);
 	void clearField();
 
+	void attemptClear(int i, int j);
+
 private:
 	Ui::MainWindow *ui;
 

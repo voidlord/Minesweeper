@@ -15,6 +15,8 @@ class Field : public QPushButton {
 	int neighbourMines;
 	int isVisible;
 
+	bool enabled;;
+
 	bool flagged;
 
 public:
@@ -28,6 +30,7 @@ public:
 	void setNeighbourMines(int numOfMines);
 	void show();
 	bool isFlagged();
+	bool isEnabled();
 	void setFlag(bool status);
 
 	void mousePressEvent(QMouseEvent* e);

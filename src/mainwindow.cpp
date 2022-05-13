@@ -252,6 +252,14 @@ void MainWindow::generateLayout() {
 				}
 			});
 
+
+			connect(field, &Field::middleClicked, [=](){
+				if (!this->firstPress) {
+					this->attemptClear(field->getX(), field->getY());
+				}
+			});
+
+
 			this->fields[i][j] = field;
 			this->gridLayout->addWidget(field, i, j);
 		}
@@ -340,4 +348,21 @@ void MainWindow::clearField() {
 
 	this->gridLayout->deleteLater();
 	this->gridLayout = nullptr;
+}
+
+void MainWindow::attemptClear(int i, int j) {
+	int flagged = 0;
+	int uncleared = 0;
+
+	for (int k = -1; k < 2; k++) {
+		for (int l = -1; l < 2; l++) {
+			if (this->fields[i+k][j+k]->isFlagged()) {
+				flagged++;
+			} else if (this->fields[i+k][j+k]->isEnabled()) {
+				uncleared++;
+			}
+		}
+	}
+
+	qDebug() << flagged << uncleared;
 }
